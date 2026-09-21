@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { InboxIcon } from "lucide-react";
 import {
   Card,
@@ -109,7 +110,12 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
                 {leads.map((lead) => (
                   <TableRow key={lead.id}>
                     <TableCell>
-                      <p className="font-medium">{lead.name}</p>
+                      <Link
+                        href={`/leads/${lead.id}`}
+                        className="font-medium hover:underline"
+                      >
+                        {lead.name}
+                      </Link>
                       {lead.email && (
                         <p className="text-sm text-muted-foreground">{lead.email}</p>
                       )}

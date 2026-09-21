@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import Link from "next/link";
 import {
   DndContext,
   DragOverlay,
@@ -38,7 +39,13 @@ function LeadCard({ lead, overlay = false }: { lead: Lead; overlay?: boolean }) 
         overlay && "rotate-2 opacity-100 shadow-lg",
       )}
     >
-      <p className="truncate text-sm font-medium">{lead.name}</p>
+      <Link
+        href={`/leads/${lead.id}`}
+        onPointerDown={(e) => e.stopPropagation()}
+        className="truncate text-sm font-medium hover:underline"
+      >
+        {lead.name}
+      </Link>
       {lead.company && (
         <p className="truncate text-xs text-muted-foreground">{lead.company}</p>
       )}
