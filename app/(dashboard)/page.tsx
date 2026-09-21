@@ -1,12 +1,17 @@
-import Link from "next/link";
-import { ArrowRightIcon, KanbanIcon, UsersIcon } from "lucide-react";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  BanknoteIcon,
+  SparklesIcon,
+  TrophyIcon,
+  UsersIcon,
+} from "lucide-react";
+import { KpiCard } from "@/components/dashboard/kpi-card";
+import { RecentActivityCard, type RecentActivity } from "@/components/dashboard/recent-activity";
+import { StageChart } from "@/components/dashboard/stage-chart";
+import { TrendChart } from "@/components/dashboard/trend-chart";
+import { ValueChart } from "@/components/dashboard/value-chart";
+import { LeadDialog } from "@/components/leads/lead-dialog";
+import { computeDashboardStats } from "@/lib/dashboard-stats";
+import { formatLeadValue } from "@/lib/stage-meta";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function DashboardPage() {
@@ -15,61 +20,88 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { count: leadCount } = await supabase
-    .from("leads")
-    .select("*", { count: "exact", head: true });
+  const [{ data: leads }, { data: activityRows }] = await Promise.all([
+    supabase
+      .from("leads")
+      .select("stage, value, created_at")
+      .eq("user_id", user!.id),
+    supabase
+      .from("activities")
+      .select("id, lead_id, user_id, type, description, created_at, leads (name)")
+      .eq("user_id", user!.id)
+      .order("created_at", { ascending: false })
+      .limit(8),
+  ]);
+
+  const stats = computeDashboardStats(leads ?? []);
+
+  const recentActivity: RecentActivity[] = (activityRows ?? []).map((row) => {
+    const nested = row.leads as unknown as { name: string } | { name: string }[] | null;
+    const leadName = Array.isArray(nested)
+      ? (nested[0]?.name ?? "Deleted lead")
+      : (nested?.name ?? "Deleted lead");
+    return {
+      id: row.id,
+      lead_id: row.lead_id,
+      user_id: row.user_id,
+      type: row.type,
+      description: row.description,
+      created_at: row.created_at,
+      lead_name: leadName,
+    };
+  });
 
   return (
-    <div className="mx-auto grid max-w-4xl gap-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          {user?.email} · {leadCount ?? 0}{" "}
-          {leadCount === 1 ? "lead" : "leads"} tracked
-        </p>
+    <div className="mx-auto grid max-w-7xl gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Your pipeline at a glance.
+          </p>
+        </div>
+        <LeadDialog />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <KanbanIcon className="size-5" />
-              Pipeline
-            </CardTitle>
-            <CardDescription>
-              Drag leads through New → Contacted → Qualified → Proposal →
-              Won/Lost.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link
-              href="/pipeline"
-              className="inline-flex items-center gap-1 text-sm font-medium text-primary underline-offset-4 hover:underline"
-            >
-              Open pipeline <ArrowRightIcon className="size-4" />
-            </Link>
-          </CardContent>
-        </Card>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <KpiCard
+          label="Total leads"
+          value={String(stats.total)}
+          hint={`${stats.newThisWeek} new in the last 7 days`}
+          icon={UsersIcon}
+        />
+        <KpiCard
+          label="Open pipeline value"
+          value={formatLeadValue(stats.openValue)}
+          hint="Excludes won and lost"
+          icon={BanknoteIcon}
+        />
+        <KpiCard
+          label="Win rate"
+          value={stats.winRate === null ? "—" : `${stats.winRate}%`}
+          hint={
+            stats.winRate === null
+              ? "Close your first deal"
+              : "Won ÷ all closed deals"
+          }
+          icon={TrophyIcon}
+        />
+        <KpiCard
+          label="New this week"
+          value={String(stats.newThisWeek)}
+          hint="Leads created in the last 7 days"
+          icon={SparklesIcon}
+        />
+      </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <UsersIcon className="size-5" />
-              Leads
-            </CardTitle>
-            <CardDescription>
-              Search, filter, and manage every lead profile in one place.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link
-              href="/leads"
-              className="inline-flex items-center gap-1 text-sm font-medium text-primary underline-offset-4 hover:underline"
-            >
-              Browse leads <ArrowRightIcon className="size-4" />
-            </Link>
-          </CardContent>
-        </Card>
+      <div className="grid items-start gap-6 xl:grid-cols-2">
+        <StageChart stages={stats.stages} />
+        <TrendChart trend={stats.trend} />
+      </div>
+
+      <div className="grid items-start gap-6 xl:grid-cols-2">
+        <ValueChart stages={stats.stages} />
+        <RecentActivityCard activities={recentActivity} />
       </div>
     </div>
   );
