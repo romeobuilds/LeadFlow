@@ -1,15 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeftIcon, PencilIcon } from "lucide-react";
+import { ArrowLeftIcon, PencilIcon, StickyNoteIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { EmptyState } from "@/components/shared/empty-state";
 import { ActivityTimeline } from "@/components/leads/activity-timeline";
 import { DeleteLeadButton } from "@/components/leads/delete-lead-button";
 import { PriorityBadge, StageBadge } from "@/components/leads/lead-badges";
@@ -68,30 +63,35 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
     { label: "Created", value: formatDate(lead.created_at) },
   ];
 
+  const noteRows = notes ?? [];
+
   return (
-    <div className="mx-auto grid max-w-5xl gap-6">
+    <div className="mx-auto grid max-w-5xl gap-4">
       <Link
         href="/leads"
-        className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        className="group -ml-1 inline-flex w-fit items-center gap-1.5 rounded-md px-1 py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
       >
-        <ArrowLeftIcon className="size-4" />
+        <ArrowLeftIcon className="size-3.5 transition-transform group-hover:-translate-x-0.5" />
         Back to leads
       </Link>
 
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="grid gap-1.5">
-              <CardTitle className="text-2xl">{lead.name}</CardTitle>
-              <CardDescription className="flex flex-wrap items-center gap-2">
+              <CardTitle className="font-heading text-lg font-semibold tracking-tight">
+                {lead.name}
+              </CardTitle>
+              <CardDescription className="flex flex-wrap items-center gap-3">
                 <StageBadge stage={lead.stage} />
                 <PriorityBadge priority={lead.priority} />
-                <span className="text-base font-semibold text-foreground">
-                  {formatLeadValue(lead.value)}
-                </span>
+                {lead.company && <span>{lead.company}</span>}
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
+              <span className="font-heading text-lg font-semibold tabular-nums">
+                {formatLeadValue(lead.value)}
+              </span>
               <LeadDialog
                 lead={lead}
                 trigger={
@@ -106,43 +106,43 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <Separator className="mb-4" />
-          <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
+          <Separator className="mb-3.5" />
+          <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
             {details.map((d) => (
-              <div key={d.label}>
-                <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-                  {d.label}
-                </dt>
-                <dd className="mt-0.5 truncate text-sm font-medium">{d.value}</dd>
+              <div key={d.label} className="grid gap-0.5">
+                <dt className="text-xs text-muted-foreground">{d.label}</dt>
+                <dd className="truncate text-sm font-medium">{d.value}</dd>
               </div>
             ))}
           </dl>
         </CardContent>
       </Card>
 
-      <div className="grid items-start gap-6 lg:grid-cols-5">
-        <Card className="lg:col-span-3">
+      <div className="grid items-start gap-4 lg:grid-cols-5">
+        <Card size="sm" className="lg:col-span-3">
           <CardHeader>
-            <CardTitle className="text-lg">
-              Notes ({notes?.length ?? 0})
+            <CardTitle>
+              Notes <span className="text-muted-foreground">{noteRows.length}</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-3">
+          <CardContent className="grid gap-2.5">
             <NoteForm leadId={lead.id} />
             <Separator />
-            {!notes?.length ? (
-              <p className="py-4 text-center text-sm text-muted-foreground">
-                No notes yet. Add the first one above.
-              </p>
+            {noteRows.length === 0 ? (
+              <EmptyState
+                icon={StickyNoteIcon}
+                title="No notes yet"
+                description="Add the first note using the field above."
+              />
             ) : (
-              notes.map((note) => <NoteCard key={note.id} note={note} />)
+              noteRows.map((note) => <NoteCard key={note.id} note={note} />)
             )}
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-2">
+        <Card size="sm" className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-lg">Activity</CardTitle>
+            <CardTitle>Activity</CardTitle>
             <CardDescription>
               Created, stage moves, and notes — logged automatically.
             </CardDescription>

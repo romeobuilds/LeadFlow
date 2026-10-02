@@ -111,22 +111,29 @@ export function LeadDialog({ lead, trigger, open, onOpenChange }: LeadDialogProp
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4" noValidate>
-          <div className="grid gap-2">
-            <Label htmlFor="lead-name">Name *</Label>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="grid gap-3"
+          noValidate
+        >
+          <div className="grid gap-1.5">
+            <Label htmlFor="lead-name">
+              Name <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="lead-name"
               placeholder="Ada Lovelace"
+              required
               disabled={isPending}
               {...register("name")}
             />
             {errors.name && (
-              <p className="text-sm text-destructive">{errors.name.message}</p>
+              <p className="text-xs text-destructive">{errors.name.message}</p>
             )}
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-1.5">
               <Label htmlFor="lead-email">Email</Label>
               <Input
                 id="lead-email"
@@ -136,10 +143,10 @@ export function LeadDialog({ lead, trigger, open, onOpenChange }: LeadDialogProp
                 {...register("email")}
               />
               {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
+                <p className="text-xs text-destructive">{errors.email.message}</p>
               )}
             </div>
-            <div className="grid gap-2">
+            <div className="grid gap-1.5">
               <Label htmlFor="lead-phone">Phone</Label>
               <Input
                 id="lead-phone"
@@ -150,8 +157,8 @@ export function LeadDialog({ lead, trigger, open, onOpenChange }: LeadDialogProp
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-1.5">
               <Label htmlFor="lead-company">Company</Label>
               <Input
                 id="lead-company"
@@ -160,7 +167,7 @@ export function LeadDialog({ lead, trigger, open, onOpenChange }: LeadDialogProp
                 {...register("company")}
               />
             </div>
-            <div className="grid gap-2">
+            <div className="grid gap-1.5">
               <Label htmlFor="lead-source">Source</Label>
               <Input
                 id="lead-source"
@@ -171,8 +178,8 @@ export function LeadDialog({ lead, trigger, open, onOpenChange }: LeadDialogProp
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-1.5">
               <Label htmlFor="lead-value">Value (USD)</Label>
               <Input
                 id="lead-value"
@@ -183,10 +190,10 @@ export function LeadDialog({ lead, trigger, open, onOpenChange }: LeadDialogProp
                 {...register("value")}
               />
               {errors.value && (
-                <p className="text-sm text-destructive">{errors.value.message}</p>
+                <p className="text-xs text-destructive">{errors.value.message}</p>
               )}
             </div>
-            <div className="grid gap-2">
+            <div className="grid gap-1.5">
               <Label htmlFor="lead-expectedClose">Expected close</Label>
               <Input
                 id="lead-expectedClose"
@@ -197,8 +204,8 @@ export function LeadDialog({ lead, trigger, open, onOpenChange }: LeadDialogProp
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-1.5">
               <Label>Stage</Label>
               <Controller
                 control={control}
@@ -209,7 +216,7 @@ export function LeadDialog({ lead, trigger, open, onOpenChange }: LeadDialogProp
                     onValueChange={field.onChange}
                     disabled={isPending}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -223,7 +230,7 @@ export function LeadDialog({ lead, trigger, open, onOpenChange }: LeadDialogProp
                 )}
               />
             </div>
-            <div className="grid gap-2">
+            <div className="grid gap-1.5">
               <Label>Priority</Label>
               <Controller
                 control={control}
@@ -234,7 +241,7 @@ export function LeadDialog({ lead, trigger, open, onOpenChange }: LeadDialogProp
                     onValueChange={field.onChange}
                     disabled={isPending}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -250,10 +257,20 @@ export function LeadDialog({ lead, trigger, open, onOpenChange }: LeadDialogProp
             </div>
           </div>
 
-          <Button type="submit" disabled={isPending}>
-            {isPending && <Loader2Icon className="animate-spin" />}
-            {isEdit ? "Save changes" : "Create lead"}
-          </Button>
+          <div className="flex justify-end gap-2 pt-1">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isPending}
+              onClick={() => setDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isPending}>
+              {isPending && <Loader2Icon className="animate-spin" />}
+              {isEdit ? "Save changes" : "Create lead"}
+            </Button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

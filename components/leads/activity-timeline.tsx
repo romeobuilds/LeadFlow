@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   ArrowRightIcon,
   FileTextIcon,
@@ -7,43 +8,69 @@ import {
 } from "lucide-react";
 import { timeAgo } from "@/lib/format-date";
 import type { Activity, ActivityType } from "@/lib/types";
-import { cn } from "@/lib/utils";
 
-const ACTIVITY_META: Record<ActivityType, { icon: LucideIcon; dot: string }> = {
-  created: { icon: PlusIcon, dot: "bg-sky-500" },
-  stage_changed: { icon: ArrowRightIcon, dot: "bg-violet-500" },
-  note_added: { icon: FileTextIcon, dot: "bg-amber-500" },
-  updated: { icon: PencilIcon, dot: "bg-slate-400" },
+const ACTIVITY_ICONS: Record<ActivityType, LucideIcon> = {
+  created: PlusIcon,
+  stage_changed: ArrowRightIcon,
+  note_added: FileTextIcon,
+  updated: PencilIcon,
 };
 
-export function ActivityTimeline({ activities }: { activities: Activity[] }) {
+const FALLBACK_ICON = PencilIcon;
+
+interface ActivityTimelineProps {
+  activities: Activity[];
+  /** Optional activity id → lead name, rendered as a link under the description. */
+  leadNames?: Record<string, string>;
+}
+
+export function ActivityTimeline({
+  activities,
+  leadNames,
+}: ActivityTimelineProps) {
   if (activities.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground">
+      <p className="py-4 text-sm text-muted-foreground">
         No activity yet. Changes to this lead will show up here.
       </p>
     );
   }
 
   return (
-    <ol className="grid gap-4">
-      {activities.map((activity) => {
-        const meta = ACTIVITY_META[activity.type];
-        const Icon = meta.icon;
+    <ol className="grid gap-3">
+      {activities.map((activity, index) => {
+        const Icon = ACTIVITY_ICONS[activity.type] ?? FALLBACK_ICON;
+        const leadName = leadNames?.[activity.id];
+        const isLast = index === activities.length - 1;
+
         return (
-          <li key={activity.id} className="flex gap-3">
-            <span
-              className={cn(
-                "flex size-7 shrink-0 items-center justify-center rounded-full text-white",
-                meta.dot,
-              )}
-            >
-              <Icon className="size-3.5" />
+          <li key={activity.id} className="relative flex gap-2.5">
+            {!isLast && (
+              <span
+                aria-hidden
+                className="absolute top-6 bottom-[-0.75rem] left-[0.65625rem] w-px bg-border"
+              />
+            )}
+            <span className="relative mt-px flex size-5 shrink-0 items-center justify-center rounded-full border bg-background text-muted-foreground">
+              <Icon className="size-3" />
             </span>
-            <div className="min-w-0">
-              <p className="text-sm">{activity.description ?? activity.type}</p>
-              <p className="text-xs text-muted-foreground">
-                {timeAgo(activity.created_at)}
+            <div className="min-w-0 flex-1">
+              <p className="leading-5">{activity.description ?? activity.type}</p>
+              <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-xs text-muted-foreground">
+                {leadName && (
+                  <>
+                    <Link
+                      href={`/leads/${activity.lead_id}`}
+                      className="font-medium text-foreground underline-offset-4 hover:underline"
+                    >
+                      {leadName}
+                    </Link>
+                    <span aria-hidden>&middot;</span>
+                  </>
+                )}
+                <time dateTime={activity.created_at}>
+                  {timeAgo(activity.created_at)}
+                </time>
               </p>
             </div>
           </li>

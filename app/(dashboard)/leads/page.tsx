@@ -1,12 +1,6 @@
 import Link from "next/link";
 import { InboxIcon } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -15,13 +9,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { EmptyState } from "@/components/shared/empty-state";
 import { LeadDialog } from "@/components/leads/lead-dialog";
 import { LeadRowActions } from "@/components/leads/lead-row-actions";
 import { LeadsFilter } from "@/components/leads/leads-filter";
 import { PriorityBadge, StageBadge } from "@/components/leads/lead-badges";
+import { PageHeader } from "@/components/shared/page-header";
 import { formatLeadValue } from "@/lib/stage-meta";
 import { createClient } from "@/lib/supabase/server";
 import type { Lead } from "@/lib/types";
+
+const HEAD_CLASS = "px-3 text-xs font-medium text-muted-foreground";
+const CELL_CLASS = "px-3 py-2";
 
 interface LeadsPageProps {
   searchParams: Promise<{ q?: string; stage?: string; source?: string }>;
@@ -62,78 +61,92 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
     new Set((sourceRows ?? []).map((r) => r.source).filter(Boolean) as string[]),
   ).sort();
 
+  const rows = leads ?? [];
+  const totalValue = rows.reduce((sum, lead) => sum + Number(lead.value), 0);
+  const isFiltered = Boolean(q || stage || source);
+
   return (
-    <div className="mx-auto grid max-w-6xl gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Leads</h1>
-          <p className="text-muted-foreground">
-            {leads?.length ?? 0} {leads?.length === 1 ? "lead" : "leads"}
-          </p>
-        </div>
-        <LeadDialog />
-      </div>
+    <div className="mx-auto grid max-w-6xl gap-4">
+      <PageHeader
+        title="Leads"
+        description={
+          rows.length > 0
+            ? `${rows.length} ${rows.length === 1 ? "lead" : "leads"} · ${formatLeadValue(totalValue)} total value`
+            : "Search, filter, and manage every lead in one place."
+        }
+        action={<LeadDialog />}
+      />
 
       <LeadsFilter sources={sources} />
 
-      <Card>
-        <CardHeader className="sr-only">
-          <CardTitle>Leads</CardTitle>
-          <CardDescription>All leads matching the current filters.</CardDescription>
-        </CardHeader>
+      <Card size="sm">
         <CardContent className="p-0">
-          {!leads?.length ? (
-            <div className="flex flex-col items-center gap-2 px-6 py-16 text-center">
-              <InboxIcon className="size-8 text-muted-foreground" />
-              <p className="font-medium">No leads found</p>
-              <p className="text-sm text-muted-foreground">
-                {q || stage || source
+          {rows.length === 0 ? (
+            <EmptyState
+              icon={InboxIcon}
+              title="No leads found"
+              description={
+                isFiltered
                   ? "Try adjusting your search or filters."
-                  : "Create your first lead to get started."}
-              </p>
-            </div>
+                  : "Create your first lead to get started."
+              }
+              action={isFiltered ? undefined : <LeadDialog />}
+            />
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead className="hidden md:table-cell">Company</TableHead>
-                  <TableHead>Stage</TableHead>
-                  <TableHead className="hidden sm:table-cell">Priority</TableHead>
-                  <TableHead className="text-right">Value</TableHead>
-                  <TableHead className="w-12">
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className={HEAD_CLASS}>Name</TableHead>
+                  <TableHead className={`${HEAD_CLASS} hidden md:table-cell`}>
+                    Company
+                  </TableHead>
+                  <TableHead className={HEAD_CLASS}>Stage</TableHead>
+                  <TableHead className={`${HEAD_CLASS} hidden sm:table-cell`}>
+                    Priority
+                  </TableHead>
+                  <TableHead className={`${HEAD_CLASS} text-right`}>Value</TableHead>
+                  <TableHead className={`${HEAD_CLASS} w-10`}>
                     <span className="sr-only">Actions</span>
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {leads.map((lead) => (
-                  <TableRow key={lead.id}>
-                    <TableCell>
+                {rows.map((lead) => (
+                  <TableRow key={lead.id} className="group">
+                    <TableCell className={CELL_CLASS}>
                       <Link
                         href={`/leads/${lead.id}`}
-                        className="font-medium hover:underline"
+                        className="font-medium underline-offset-4 hover:underline"
                       >
                         {lead.name}
                       </Link>
                       {lead.email && (
-                        <p className="text-sm text-muted-foreground">{lead.email}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {lead.email}
+                        </p>
                       )}
                     </TableCell>
-                    <TableCell className="hidden md:table-cell">
+                    <TableCell
+                      className={`${CELL_CLASS} hidden text-muted-foreground md:table-cell`}
+                    >
                       {lead.company ?? "—"}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className={CELL_CLASS}>
                       <StageBadge stage={lead.stage} />
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell">
+                    <TableCell className={`${CELL_CLASS} hidden sm:table-cell`}>
                       <PriorityBadge priority={lead.priority} />
                     </TableCell>
-                    <TableCell className="text-right font-medium">
+                    <TableCell
+                      className={`${CELL_CLASS} text-right font-medium tabular-nums`}
+                    >
                       {formatLeadValue(lead.value)}
                     </TableCell>
-                    <TableCell>
-                      <LeadRowActions lead={lead} />
+                    <TableCell className={`${CELL_CLASS} pr-2 text-right`}>
+                      <LeadRowActions
+                        lead={lead}
+                        className="opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+                      />
                     </TableCell>
                   </TableRow>
                 ))}

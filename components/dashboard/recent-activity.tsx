@@ -1,11 +1,5 @@
-import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { HistoryIcon } from "lucide-react";
+import { EmptyState } from "@/components/shared/empty-state";
 import { ActivityTimeline } from "@/components/leads/activity-timeline";
 import type { Activity } from "@/lib/types";
 
@@ -19,44 +13,26 @@ export function RecentActivityCard({
 }: {
   activities: RecentActivity[];
 }) {
+  const leadNames = Object.fromEntries(
+    activities.map((a) => [a.id, a.lead_name]),
+  );
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Recent activity</CardTitle>
-        <CardDescription>Latest events across all leads.</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <section className="grid content-start gap-3">
+      <h2 className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+        Recent activity
+      </h2>
+      <div className="rounded-lg bg-card p-3 ring-1 ring-foreground/10">
         {activities.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No activity yet. Add a lead to get started.
-          </p>
+          <EmptyState
+            icon={HistoryIcon}
+            title="No activity yet"
+            description="Add a lead and its history will show up here."
+          />
         ) : (
-          <ol className="grid gap-4">
-            {activities.map((a) => (
-              <li key={a.id}>
-                <Link
-                  href={`/leads/${a.lead_id}`}
-                  className="mb-1 block text-xs font-medium text-primary hover:underline"
-                >
-                  {a.lead_name}
-                </Link>
-                <ActivityTimeline
-                  activities={[
-                    {
-                      id: a.id,
-                      lead_id: a.lead_id,
-                      user_id: a.user_id,
-                      type: a.type,
-                      description: a.description,
-                      created_at: a.created_at,
-                    },
-                  ]}
-                />
-              </li>
-            ))}
-          </ol>
+          <ActivityTimeline activities={activities} leadNames={leadNames} />
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

@@ -26,7 +26,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       {message === "check-email" && (
         <p
           role="status"
-          className="mb-4 flex items-start gap-2 rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-800"
+          className="mb-4 flex items-start gap-2 rounded-lg bg-emerald-500/10 p-3 text-sm text-emerald-700 ring-1 ring-emerald-500/25 dark:text-emerald-400"
         >
           <CircleCheckIcon className="mt-0.5 size-4 shrink-0" />
           Account created! Check your inbox to confirm your email, then sign

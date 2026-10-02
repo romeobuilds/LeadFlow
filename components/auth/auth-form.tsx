@@ -37,8 +37,8 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4" noValidate>
-      <div className="grid gap-2">
+    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-3" noValidate>
+      <div className="grid gap-1.5">
         <Label htmlFor="email">Email</Label>
         <Input
           id="email"
@@ -49,11 +49,11 @@ export function LoginForm() {
           {...register("email")}
         />
         {errors.email?.message && (
-          <p className="text-sm text-destructive">{errors.email.message}</p>
+          <p className="text-xs text-destructive">{errors.email.message}</p>
         )}
       </div>
 
-      <div className="grid gap-2">
+      <div className="grid gap-1.5">
         <Label htmlFor="password">Password</Label>
         <Input
           id="password"
@@ -64,12 +64,12 @@ export function LoginForm() {
           {...register("password")}
         />
         {errors.password?.message && (
-          <p className="text-sm text-destructive">{errors.password.message}</p>
+          <p className="text-xs text-destructive">{errors.password.message}</p>
         )}
       </div>
 
       {formError && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-xs text-destructive">
           {formError}
         </p>
       )}
@@ -104,8 +104,8 @@ export function SignupForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4" noValidate>
-      <div className="grid gap-2">
+    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-3" noValidate>
+      <div className="grid gap-1.5">
         <Label htmlFor="fullName">Full name</Label>
         <Input
           id="fullName"
@@ -116,11 +116,11 @@ export function SignupForm() {
           {...register("fullName")}
         />
         {errors.fullName?.message && (
-          <p className="text-sm text-destructive">{errors.fullName.message}</p>
+          <p className="text-xs text-destructive">{errors.fullName.message}</p>
         )}
       </div>
 
-      <div className="grid gap-2">
+      <div className="grid gap-1.5">
         <Label htmlFor="email">Email</Label>
         <Input
           id="email"
@@ -131,11 +131,11 @@ export function SignupForm() {
           {...register("email")}
         />
         {errors.email?.message && (
-          <p className="text-sm text-destructive">{errors.email.message}</p>
+          <p className="text-xs text-destructive">{errors.email.message}</p>
         )}
       </div>
 
-      <div className="grid gap-2">
+      <div className="grid gap-1.5">
         <Label htmlFor="password">Password</Label>
         <Input
           id="password"
@@ -146,12 +146,12 @@ export function SignupForm() {
           {...register("password")}
         />
         {errors.password?.message && (
-          <p className="text-sm text-destructive">{errors.password.message}</p>
+          <p className="text-xs text-destructive">{errors.password.message}</p>
         )}
       </div>
 
       {formError && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-xs text-destructive">
           {formError}
         </p>
       )}

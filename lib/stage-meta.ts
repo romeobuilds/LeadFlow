@@ -12,10 +12,10 @@ export interface StageMeta {
 }
 
 export const STAGE_META: StageMeta[] = [
-  { value: "new", label: "New", dot: "bg-sky-500", color: "#0ea5e9" },
-  { value: "contacted", label: "Contacted", dot: "bg-amber-500", color: "#f59e0b" },
-  { value: "qualified", label: "Qualified", dot: "bg-violet-500", color: "#8b5cf6" },
-  { value: "proposal", label: "Proposal", dot: "bg-orange-500", color: "#f97316" },
+  { value: "new", label: "New", dot: "bg-blue-400", color: "#60a5fa" },
+  { value: "contacted", label: "Contacted", dot: "bg-blue-500", color: "#3b82f6" },
+  { value: "qualified", label: "Qualified", dot: "bg-blue-600", color: "#2563eb" },
+  { value: "proposal", label: "Proposal", dot: "bg-blue-800", color: "#1e40af" },
   { value: "won", label: "Won", dot: "bg-emerald-500", color: "#10b981", closed: true },
   { value: "lost", label: "Lost", dot: "bg-rose-500", color: "#f43f5e", closed: true },
 ];

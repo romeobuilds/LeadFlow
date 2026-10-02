@@ -16,6 +16,7 @@ import {
 import { InboxIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
+import { EmptyState } from "@/components/shared/empty-state";
 import { LeadDialog } from "@/components/leads/lead-dialog";
 import { PriorityBadge } from "@/components/leads/lead-badges";
 import { STAGE_META, formatLeadValue } from "@/lib/stage-meta";
@@ -34,15 +35,15 @@ function LeadCard({ lead, overlay = false }: { lead: Lead; overlay?: boolean }) 
       {...attributes}
       {...listeners}
       className={cn(
-        "touch-none rounded-lg border bg-card p-3 shadow-sm transition-shadow hover:shadow",
+        "group touch-none cursor-grab rounded-lg bg-card p-2.5 ring-1 ring-foreground/10 transition-colors hover:ring-foreground/20 active:cursor-grabbing",
         isDragging && "opacity-40",
-        overlay && "rotate-2 opacity-100 shadow-lg",
+        overlay && "rotate-2 cursor-grabbing opacity-100 shadow-lg ring-foreground/30",
       )}
     >
       <Link
         href={`/leads/${lead.id}`}
         onPointerDown={(e) => e.stopPropagation()}
-        className="truncate text-sm font-medium hover:underline"
+        className="block truncate text-sm font-medium underline-offset-4 hover:underline"
       >
         {lead.name}
       </Link>
@@ -50,7 +51,9 @@ function LeadCard({ lead, overlay = false }: { lead: Lead; overlay?: boolean }) 
         <p className="truncate text-xs text-muted-foreground">{lead.company}</p>
       )}
       <div className="mt-2 flex items-center justify-between gap-2">
-        <span className="text-xs font-semibold">{formatLeadValue(lead.value)}</span>
+        <span className="text-sm font-medium tabular-nums">
+          {formatLeadValue(lead.value)}
+        </span>
         <PriorityBadge priority={lead.priority} />
       </div>
     </div>
@@ -71,26 +74,31 @@ function StageColumn({
     <div
       ref={setNodeRef}
       className={cn(
-        "flex w-72 shrink-0 flex-col rounded-xl border bg-muted/50 transition-colors",
-        isOver && "border-primary bg-muted",
+        "flex w-64 shrink-0 snap-start flex-col rounded-lg bg-muted/40 ring-1 ring-foreground/5 transition-colors",
+        isOver && "bg-muted ring-2 ring-primary/40",
       )}
     >
-      <div className="flex items-center justify-between gap-2 px-3 pt-3 pb-2">
-        <p className="flex items-center gap-2 text-sm font-semibold">
-          <span className={cn("size-2 rounded-full", stage.dot)} />
+      <div className="flex items-center justify-between gap-2 px-2.5 pt-2.5 pb-1.5">
+        <p className="flex items-center gap-1.5 text-xs font-medium">
+          <span className={cn("size-1.5 shrink-0 rounded-full", stage.dot)} />
           {stage.label}
-          <span className="text-xs font-normal text-muted-foreground">
-            {leads.length}
-          </span>
+          <span className="text-muted-foreground tabular-nums">{leads.length}</span>
         </p>
-        <p className="text-xs text-muted-foreground">{formatLeadValue(total)}</p>
+        <p className="text-xs text-muted-foreground tabular-nums">
+          {formatLeadValue(total)}
+        </p>
       </div>
-      <div className="flex min-h-24 flex-col gap-2 overflow-y-auto p-2">
+      <div className="flex min-h-28 flex-col gap-1.5 p-1.5 pt-0">
         {leads.map((lead) => (
           <LeadCard key={lead.id} lead={lead} />
         ))}
         {leads.length === 0 && (
-          <p className="rounded-lg border border-dashed p-3 text-center text-xs text-muted-foreground">
+          <p
+            className={cn(
+              "flex flex-1 items-center justify-center rounded-lg border border-dashed border-foreground/15 p-3 text-center text-xs text-muted-foreground transition-colors",
+              isOver && "border-primary/60 text-foreground",
+            )}
+          >
             Drop leads here
           </p>
         )}
@@ -148,14 +156,14 @@ export function PipelineBoard({ initialLeads }: { initialLeads: Lead[] }) {
 
   if (leads.length === 0) {
     return (
-      <Card className="mx-auto max-w-md">
-        <CardContent className="flex flex-col items-center gap-2 px-6 py-12 text-center">
-          <InboxIcon className="size-8 text-muted-foreground" />
-          <p className="font-medium">Your pipeline is empty</p>
-          <p className="text-sm text-muted-foreground">
-            Create your first lead to start dragging it through the stages.
-          </p>
-          <LeadDialog />
+      <Card size="sm" className="max-w-sm">
+        <CardContent className="p-0">
+          <EmptyState
+            icon={InboxIcon}
+            title="Your pipeline is empty"
+            description="Create your first lead to start dragging it through the stages."
+            action={<LeadDialog />}
+          />
         </CardContent>
       </Card>
     );
@@ -167,7 +175,7 @@ export function PipelineBoard({ initialLeads }: { initialLeads: Lead[] }) {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      <div className="-mx-4 flex snap-x gap-2 overflow-x-auto px-4 pb-2 md:-mx-6 md:px-6">
         {STAGE_META.map((stage) => (
           <StageColumn
             key={stage.value}

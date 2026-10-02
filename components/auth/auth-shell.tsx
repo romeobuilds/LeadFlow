@@ -16,17 +16,21 @@ interface AuthLayoutProps {
 
 export function AuthShell({ children, title, description }: AuthLayoutProps) {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+    <div className="flex min-h-svh flex-col items-center justify-center gap-8 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
-        <div className="flex items-center justify-center gap-2 font-semibold">
-          <span className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <KanbanSquareIcon className="size-4" />
+        <div className="flex items-center justify-center gap-2">
+          <span className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <KanbanSquareIcon className="size-3.5" />
           </span>
-          LeadFlow
+          <span className="font-heading text-sm font-semibold tracking-tight">
+            LeadFlow
+          </span>
         </div>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">{title}</CardTitle>
+        <Card size="sm">
+          <CardHeader className="gap-1.5">
+            <CardTitle className="font-heading text-lg font-semibold tracking-tight">
+              {title}
+            </CardTitle>
             <CardDescription>{description}</CardDescription>
           </CardHeader>
           <CardContent>{children}</CardContent>

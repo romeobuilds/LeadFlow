@@ -33,14 +33,16 @@ export default async function DashboardLayout({
     <div className="flex min-h-svh">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between gap-4 border-b bg-card px-4 py-3 md:px-6">
-          <p className="truncate text-sm text-muted-foreground">
+        <header className="sticky top-0 z-30 flex h-12 items-center justify-between gap-4 border-b bg-sidebar/80 px-4 backdrop-blur-sm md:px-6">
+          <p className="truncate text-xs text-muted-foreground">
             Welcome back,{" "}
             <span className="font-medium text-foreground">{displayName}</span>
           </p>
-          <div className="flex items-center gap-3">
-            <Avatar className="size-8">
-              <AvatarFallback>{initial}</AvatarFallback>
+          <div className="flex items-center gap-1">
+            <Avatar className="size-6 rounded-full">
+              <AvatarFallback className="text-[0.625rem] font-medium">
+                {initial}
+              </AvatarFallback>
             </Avatar>
             <form action={signOut}>
               <Button variant="ghost" size="sm" type="submit">
@@ -50,7 +52,7 @@ export default async function DashboardLayout({
             </form>
           </div>
         </header>
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="flex-1 px-4 py-5 md:px-6 md:py-6">{children}</main>
       </div>
     </div>
   );

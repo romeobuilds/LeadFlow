@@ -1,5 +1,6 @@
 import { LeadDialog } from "@/components/leads/lead-dialog";
 import { PipelineBoard } from "@/components/pipeline/pipeline-board";
+import { PageHeader } from "@/components/shared/page-header";
 import { createClient } from "@/lib/supabase/server";
 import type { Lead } from "@/lib/types";
 
@@ -17,16 +18,12 @@ export default async function PipelinePage() {
     .returns<Lead[]>();
 
   return (
-    <div className="mx-auto grid max-w-7xl gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Pipeline</h1>
-          <p className="text-muted-foreground">
-            Drag cards between stages — changes save automatically.
-          </p>
-        </div>
-        <LeadDialog />
-      </div>
+    <div className="grid gap-4">
+      <PageHeader
+        title="Pipeline"
+        description="Drag cards between stages — changes save automatically."
+        action={<LeadDialog />}
+      />
 
       <PipelineBoard initialLeads={leads ?? []} />
     </div>

@@ -1,15 +1,10 @@
-import {
-  BanknoteIcon,
-  SparklesIcon,
-  TrophyIcon,
-  UsersIcon,
-} from "lucide-react";
-import { KpiCard } from "@/components/dashboard/kpi-card";
+import { MetricStrip } from "@/components/dashboard/metric-strip";
 import { RecentActivityCard, type RecentActivity } from "@/components/dashboard/recent-activity";
 import { StageChart } from "@/components/dashboard/stage-chart";
 import { TrendChart } from "@/components/dashboard/trend-chart";
 import { ValueChart } from "@/components/dashboard/value-chart";
 import { LeadDialog } from "@/components/leads/lead-dialog";
+import { PageHeader } from "@/components/shared/page-header";
 import { computeDashboardStats } from "@/lib/dashboard-stats";
 import { formatLeadValue } from "@/lib/stage-meta";
 import { createClient } from "@/lib/supabase/server";
@@ -52,54 +47,45 @@ export default async function DashboardPage() {
   });
 
   return (
-    <div className="mx-auto grid max-w-7xl gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Your pipeline at a glance.
-          </p>
-        </div>
-        <LeadDialog />
-      </div>
+    <div className="mx-auto grid max-w-6xl gap-6">
+      <PageHeader
+        title="Dashboard"
+        description="Your pipeline at a glance."
+        action={<LeadDialog />}
+      />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard
-          label="Total leads"
-          value={String(stats.total)}
-          hint={`${stats.newThisWeek} new in the last 7 days`}
-          icon={UsersIcon}
-        />
-        <KpiCard
-          label="Open pipeline value"
-          value={formatLeadValue(stats.openValue)}
-          hint="Excludes won and lost"
-          icon={BanknoteIcon}
-        />
-        <KpiCard
-          label="Win rate"
-          value={stats.winRate === null ? "—" : `${stats.winRate}%`}
-          hint={
-            stats.winRate === null
-              ? "Close your first deal"
-              : "Won ÷ all closed deals"
-          }
-          icon={TrophyIcon}
-        />
-        <KpiCard
-          label="New this week"
-          value={String(stats.newThisWeek)}
-          hint="Leads created in the last 7 days"
-          icon={SparklesIcon}
-        />
-      </div>
+      <MetricStrip
+        metrics={[
+          {
+            label: "Open pipeline value",
+            value: formatLeadValue(stats.openValue),
+            hint: "Excludes won and lost",
+          },
+          {
+            label: "Total leads",
+            value: String(stats.total),
+            hint: `${stats.newThisWeek} new in the last 7 days`,
+          },
+          {
+            label: "Win rate",
+            value: stats.winRate === null ? "—" : `${stats.winRate}%`,
+            hint:
+              stats.winRate === null ? "Close your first deal" : "Won ÷ closed",
+          },
+          {
+            label: "New this week",
+            value: String(stats.newThisWeek),
+            hint: "Created in the last 7 days",
+          },
+        ]}
+      />
 
-      <div className="grid items-start gap-6 xl:grid-cols-2">
+      <div className="grid items-start gap-6 md:grid-cols-2">
         <StageChart stages={stats.stages} />
         <TrendChart trend={stats.trend} />
       </div>
 
-      <div className="grid items-start gap-6 xl:grid-cols-2">
+      <div className="grid items-start gap-6 md:grid-cols-2">
         <ValueChart stages={stats.stages} />
         <RecentActivityCard activities={recentActivity} />
       </div>

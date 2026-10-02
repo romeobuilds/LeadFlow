@@ -24,7 +24,13 @@ import { LeadDialog } from "@/components/leads/lead-dialog";
 import { deleteLead } from "@/app/(dashboard)/leads/actions";
 import type { Lead } from "@/lib/types";
 
-export function LeadRowActions({ lead }: { lead: Lead }) {
+export function LeadRowActions({
+  lead,
+  className,
+}: {
+  lead: Lead;
+  className?: string;
+}) {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -71,7 +77,12 @@ export function LeadRowActions({ lead }: { lead: Lead }) {
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
-            <Button variant="ghost" size="icon" aria-label={`Actions for ${lead.name}`}>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className={className}
+              aria-label={`Actions for ${lead.name}`}
+            >
               <MoreHorizontalIcon className="size-4" />
             </Button>
           }

@@ -58,14 +58,19 @@ export function NoteCard({ note }: { note: Note }) {
         </AlertDialogContent>
       </AlertDialog>
 
-      <div className="group rounded-lg border bg-card p-3">
+      <div className="group rounded-lg bg-muted/40 p-3 ring-1 ring-foreground/5 transition-colors hover:bg-muted/70">
         <p className="text-sm whitespace-pre-wrap">{note.content}</p>
         <div className="mt-2 flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">{timeAgo(note.created_at)}</p>
+          <time
+            dateTime={note.created_at}
+            className="text-xs text-muted-foreground"
+          >
+            {timeAgo(note.created_at)}
+          </time>
           <Button
             variant="ghost"
-            size="icon"
-            className="size-7 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+            size="icon-sm"
+            className="text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 hover:text-destructive"
             aria-label="Delete note"
             onClick={() => setConfirmOpen(true)}
           >

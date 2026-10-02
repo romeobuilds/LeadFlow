@@ -38,10 +38,11 @@ export function LeadsFilter({ sources }: LeadsFilterProps) {
   const hasFilters = Boolean(query || stage || source);
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
       <div className="relative flex-1">
         <SearchIcon className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
+          aria-label="Search leads"
           placeholder="Search name, company, or email…"
           defaultValue={query}
           onChange={(e) => updateParam("q", e.target.value || null)}
@@ -53,7 +54,7 @@ export function LeadsFilter({ sources }: LeadsFilterProps) {
         value={stage || "all"}
         onValueChange={(v) => updateParam("stage", v === "all" ? null : v)}
       >
-        <SelectTrigger className="w-full sm:w-40">
+        <SelectTrigger aria-label="Filter by stage" className="w-full sm:w-40">
           <SelectValue placeholder="Stage" />
         </SelectTrigger>
         <SelectContent>
@@ -70,7 +71,7 @@ export function LeadsFilter({ sources }: LeadsFilterProps) {
         value={source || "all"}
         onValueChange={(v) => updateParam("source", v === "all" ? null : v)}
       >
-        <SelectTrigger className="w-full sm:w-40">
+        <SelectTrigger aria-label="Filter by source" className="w-full sm:w-40">
           <SelectValue placeholder="Source" />
         </SelectTrigger>
         <SelectContent>
@@ -87,6 +88,7 @@ export function LeadsFilter({ sources }: LeadsFilterProps) {
         <Button
           variant="ghost"
           size="sm"
+          className="self-start sm:self-auto"
           onClick={() => router.replace(pathname, { scroll: false })}
         >
           <XIcon className="size-4" />
