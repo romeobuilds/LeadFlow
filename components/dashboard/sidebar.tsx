@@ -11,7 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboardIcon },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboardIcon },
   { href: "/pipeline", label: "Pipeline", icon: KanbanIcon },
   { href: "/leads", label: "Leads", icon: UsersIcon },
 ];
@@ -21,7 +21,7 @@ export function Sidebar() {
 
   return (
     <aside className="hidden w-48 shrink-0 flex-col gap-6 border-r bg-sidebar p-3 md:flex">
-      <Link href="/" className="flex items-center gap-2 px-2 py-1">
+      <Link href="/dashboard" className="flex items-center gap-2 px-2 py-1">
         <span className="flex size-6 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
           <KanbanSquareIcon className="size-3.5" />
         </span>
@@ -32,8 +32,7 @@ export function Sidebar() {
 
       <nav className="grid gap-0.5">
         {NAV_ITEMS.map((item) => {
-          const isActive =
-            item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+          const isActive = pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}

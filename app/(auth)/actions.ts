@@ -23,7 +23,7 @@ export async function login(
     return { error: error.message };
   }
 
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function signup(
@@ -52,7 +52,7 @@ export async function signup(
     redirect("/login?message=check-email");
   }
 
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function signOut(): Promise<void> {
